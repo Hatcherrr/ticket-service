@@ -1,5 +1,5 @@
 # ticket-service
-Set every seat with a priority, then use PriorityQueue to solve this problem
+Set every seat with a priority, then use PriorityQueue to solve this problem.
 Assumption: Best Seats are the seats which located at middle of the venue.
 The venue is 9 * 33 the priority distribution like: (you can check it in the main method)
 
