@@ -1,4 +1,10 @@
 # ticket-service
+Install maven: https://maven.apache.org/download.cgi, then direct to the project file.
+
+Use "mvn clean install" to build jar file.
+Then use "java -cp ./target/ticket-service.jar com.mercury.ticketservice.TicketServiceApplication" to run this application
+
+
 Set every seat with a priority, then use PriorityQueue to solve this problem.
 
 Assumption: Best Seats are the seats which located at middle of the venue.
@@ -23,8 +29,3 @@ The venue is 9 * 33 the priority distribution like: (you can check it in the mai
 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 130 128 126 124 122 120 118 116 114 112 110 108 106 104 102 100
 
 I think the last rows are better than the first three rows, so I set the different weight with each row.
-
-Install maven: https://maven.apache.org/download.cgi, then direct to the project file.
-
-Use "mvn clean install" to build jar file.
-Then use "java -cp ./target/ticket-service.jar com.mercury.ticketservice.TicketServiceApplication" to run this application
