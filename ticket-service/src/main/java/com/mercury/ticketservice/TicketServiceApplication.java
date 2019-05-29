@@ -30,6 +30,8 @@ public class TicketServiceApplication {
 	
 	public static void printSeats(TicketServiceImpl ticketService) {
 		List<List<Seat>> seats = TicketServiceImpl.getSeats();
+		System.out.println();
+		System.out.println("------------------------------------------------------ S C R E E N -------------------------------------------------------");
 		for(List<Seat> rowSeats : seats) {
 			System.out.println();
 			for(Seat seat : rowSeats) {
