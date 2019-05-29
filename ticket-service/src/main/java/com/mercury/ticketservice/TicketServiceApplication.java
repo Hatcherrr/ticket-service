@@ -106,8 +106,8 @@ public class TicketServiceApplication {
 			System.out.println("Do you want separate seats?(yes/no) ");
 			String choice = input.next();
 			while(!choice.equals("yes") && !choice.equals("no")) {
-				System.out.println("\nPlease input only yes or no. ");
-				email = input.next();
+				System.out.print("\nPlease input only yes or no. ");
+				choice = input.next();
 			}
 			if(choice.equals("yes")) {
 				bookSeparateSeats(ticketService, num, email);
