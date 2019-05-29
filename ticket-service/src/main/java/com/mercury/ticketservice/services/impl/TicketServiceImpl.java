@@ -134,6 +134,23 @@ public class TicketServiceImpl implements TicketService {
 		return avilableSeats.size();
 	}
 
+	// find seats which are separate
+	public SeatHold findAndHoldSeparateSeats(int numSeats, String customerEmail) {
+		if(numSeats <= 0 || numSeats > numSeatsAvailable())
+			return null;
+		List<Seat> resultSeats = new ArrayList<>();
+		for(int i = 0; i < numSeats; i++) {
+			Seat seat = avilableSeats.poll();
+			int row = seat.getRow();
+			int col = seat.getCol();
+			seats.get(row).get(col).setStatus(1);
+			resultSeats.add(seat);
+		}
+		SeatHold seatHold = new SeatHold(seatHoldId++, customerEmail, resultSeats, new Date());
+		holds.add(seatHold);
+		return seatHold;
+	}
+	
 	/*
 	 * Best Seats: the continues seats which has the highest priorities
 	 */

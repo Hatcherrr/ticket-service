@@ -54,6 +54,24 @@ public class TicketServiceApplication {
 		System.out.println();
 	}
 	
+	public static void bookSeparateSeats(TicketServiceImpl ticketService, int num, String email) {
+		if(num > ticketService.numSeatsAvailable()) {
+			System.out.println("\nSorry, seats are not enough!\n");
+			return;
+		}
+		SeatHold seatHold = ticketService.findAndHoldSeparateSeats(num, email);
+		if(seatHold != null) {
+			System.out.print("You have booked seats: ");
+			List<Seat> seatList = seatHold.getSeats();
+			for(Seat seat : seatList) {
+				char row = (char)('A' + seat.getRow());
+				int col = seat.getCol() + 1;
+				System.out.print(row + "" + col + " ");
+			}
+			System.out.println("\nSeat holding ID is " + seatHold.getId() + ". Expired in 15 minutes. Please pay soon!\n");
+		}
+	}
+	
 	public static void bookSeats(TicketServiceImpl ticketService) {
 		System.out.println();
 		System.out.print("How many seats you want to book? ");
@@ -82,7 +100,18 @@ public class TicketServiceApplication {
 		System.out.println();
 		SeatHold seatHold = ticketService.findAndHoldSeats(num, email);
 		if(seatHold == null) {
-			System.out.println("Sorry, book failed!\n");
+			System.out.println("Sorry, book failed! Continues seats are not enough.\n");
+			System.out.println("Do you want separate seats?(yes/no) ");
+			String choice = input.next();
+			while(!choice.equals("yes") && !choice.equals("no")) {
+				System.out.println("\nPlease input only yes or no. ");
+				email = input.next();
+			}
+			if(choice.equals("yes")) {
+				bookSeparateSeats(ticketService, num, email);
+			}else {
+				System.out.println();
+			}
 		}else {
 			System.out.print("You have booked seats: ");
 			List<Seat> seatList = seatHold.getSeats();
