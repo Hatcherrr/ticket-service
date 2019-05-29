@@ -1,6 +1,7 @@
 package com.mercury.tickerservice;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,12 +29,26 @@ public class TickServiceTest {
 	 */
 	@Test
 	public void testConfirmationCode() {
-		ticketService.findAndHoldSeats(2, "hatcher.zhao.java@gmail.com");
-		long code = 0;
-		for(int col = 16; col < 18; col++) { // seats: E17, E18
-			code += 4 * 100 + col;
-			code *= 1000;
-		}
+		SeatHold hold = ticketService.findAndHoldSeats(2, "hatcher.zhao.java@gmail.com");
+		
+		// same way to calculate the code
+		List<Seat> seats = hold.getSeats();
+		long codeRow = 0;
+		long codeCol = 0;
+		List<Integer> rowList = seats.stream()
+				.map(Seat::getRow)
+				.distinct()
+				.collect(Collectors.toList());
+		for(int move : rowList)
+			codeRow += 1 << move;
+		List<Integer> colList = seats.stream()
+				.map(Seat::getCol)
+				.distinct()
+				.collect(Collectors.toList());
+		for(int move : colList)
+			codeCol += 1 << move;
+		long code = codeRow << 33 + codeCol;
+		
 		String confirm = ticketService.reserveSeats(1, "hatcher.zhao.java@gmail.com");
 		Assert.assertTrue(confirm.equals("" + code));
 	}
@@ -106,10 +121,6 @@ public class TickServiceTest {
 	public void zTestHoldAmount() {
 		int count = TicketServiceImpl.getHolds().size();
 		Assert.assertEquals(count, 3);
-		long seatsCount = TicketServiceImpl.getHolds().stream()
-				.flatMap(hold -> hold.getSeats().stream())
-				.count();
-		Assert.assertEquals(count, 3);
 	}
 	
 	/*
@@ -140,5 +151,25 @@ public class TickServiceTest {
 		}
 		int count = ticketService.numSeatsAvailable();
 		Assert.assertTrue(count == 295);
+	}
+	
+	// test multi-threading
+	@Test
+	public void zzTestConcurrent() {
+		TicketServiceImpl.setEXPIRE_TIME(15 * 60 * 1000); // set expire time back to 15 minutes
+		new Thread(() -> {
+			try {
+				Thread.sleep(1000); // make sure the second thread get the lock first
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			int count = ticketService.numSeatsAvailable();
+			Assert.assertEquals(count, 293);
+			ticketService.findAndHoldSeats(10, "thread1@testcase.com");
+			Assert.assertEquals(count, 283);
+		}).start();
+		new Thread(() -> {
+			ticketService.findAndHoldSeats(2, "thread2@testcase.com");
+		}).start();
 	}
 }

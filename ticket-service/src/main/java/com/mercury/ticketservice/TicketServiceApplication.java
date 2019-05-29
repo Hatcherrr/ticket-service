@@ -10,9 +10,11 @@ import com.mercury.ticketservice.services.impl.TicketServiceImpl;
 public class TicketServiceApplication {
 
 	private static Scanner input;
+	
+	private static TicketServiceImpl ticketService = new TicketServiceImpl();
 
 	// the higher the priority, the better the seats
-	public static void printPriorities(TicketServiceImpl ticketService) {
+	public static void printPriorities() {
 		List<List<Seat>> seats = TicketServiceImpl.getSeats();
 		for(List<Seat> seatList : seats) {
 			System.out.println();
@@ -28,35 +30,34 @@ public class TicketServiceApplication {
 		System.out.println();
 	}
 	
-	public static void printSeats(TicketServiceImpl ticketService) {
+	public static void printSeats() {
 		List<List<Seat>> seats = TicketServiceImpl.getSeats();
-		System.out.println();
-		System.out.println("------------------------------------------------------ S C R E E N -------------------------------------------------------");
+		System.out.println("\n---------------------------------------------------------- S C R E E N ------------------------------------------------------------");
 		for(List<Seat> rowSeats : seats) {
 			System.out.println();
 			for(Seat seat : rowSeats) {
 				char row = (char) ('A' + seat.getRow());
 				int col = seat.getCol() + 1;
-				if(seat.getStatus() == 0)
-					System.out.print(row + "" + col +" ");
-				else if(seat.getStatus() == 1) 
-					System.out.print(" △ "); // Hold
-				else
-					System.out.print(" ▉ "); // Reserved
+				if(seat.getStatus() == 0) {
+					System.out.format("%c%02d ", row, col);
+				}
+				else if(seat.getStatus() == 1) {
+					System.out.format("%-4s", " Δ"); // Hold
+				}
+				else {
+					System.out.format("%-4s", " ◆"); // Reserved
+				}
 			}
 		}
-		System.out.println();
-		System.out.println("△ - Holding   ▉ - Reserved");
+		System.out.println("\nΔ - Holding   ◆ - Reserved\n");
+	}
+	
+	public static void printSeatAmount() {
+		System.out.println("\nAvailable seats: " + ticketService.numSeatsAvailable());
 		System.out.println();
 	}
 	
-	public static void printSeatAmount(TicketServiceImpl ticketService) {
-		System.out.println();
-		System.out.println("Available seats: " + ticketService.numSeatsAvailable());
-		System.out.println();
-	}
-	
-	public static void bookSeparateSeats(TicketServiceImpl ticketService, int num, String email) {
+	public static void bookSeparateSeats(int num, String email) {
 		if(num > ticketService.numSeatsAvailable()) {
 			System.out.println("\nSorry, seats are not enough!\n");
 			return;
@@ -71,21 +72,31 @@ public class TicketServiceApplication {
 				System.out.print(row + "" + col + " ");
 			}
 			System.out.println("\nSeat holding ID is " + seatHold.getId() + ". Expired in 15 minutes. Please pay soon!\n");
+		}else {
+			System.out.println("Sorry, book failed!\n");
 		}
 	}
 	
-	public static void bookSeats(TicketServiceImpl ticketService) {
+	public static void bookSeats() {
 		System.out.println();
-		System.out.print("How many seats you want to book? ");
+		System.out.print("How many seats you want to book?(input 0 back to the main menu) ");
 		int num = -1;
 		while(true) {
 			input = new Scanner(System.in);
 			try{
 				num = input.nextInt();
-				break;
+				if(num > 0)
+					break;
+				else if(num == 0) {
+					System.out.println();
+					return;
+				}else {
+					System.out.println("\nInvalid number\n");
+					System.out.print("How many seats you want to book?(input 0 back to the main menu) ");
+				}
 			}catch(Exception e) {
 				System.out.println("\nPlease input a number!\n");
-				System.out.print("How many seats you want to book? ");
+				System.out.print("How many seats you want to book?(input 0 back to the main menu) ");
 			}
 		}
 		if(num > ticketService.numSeatsAvailable()) {
@@ -103,14 +114,14 @@ public class TicketServiceApplication {
 		SeatHold seatHold = ticketService.findAndHoldSeats(num, email);
 		if(seatHold == null) {
 			System.out.println("Sorry, book failed! Continues seats are not enough.\n");
-			System.out.println("Do you want separate seats?(yes/no) ");
+			System.out.print("Do you want separate seats?(yes/no) ");
 			String choice = input.next();
 			while(!choice.equals("yes") && !choice.equals("no")) {
 				System.out.print("\nPlease input only yes or no. ");
 				choice = input.next();
 			}
 			if(choice.equals("yes")) {
-				bookSeparateSeats(ticketService, num, email);
+				bookSeparateSeats(num, email);
 			}else {
 				System.out.println();
 			}
@@ -126,9 +137,8 @@ public class TicketServiceApplication {
 		}
 	}
 	
-	public static void reserveSeats(TicketServiceImpl ticketService) {
-		System.out.println();
-		System.out.print("Please input seat holding id: ");
+	public static void reserveSeats() {
+		System.out.print("\nPlease input seat holding id(input 0 for exist): ");
 		int id = -1;
 		while(true) {
 			input = new Scanner(System.in);
@@ -136,13 +146,16 @@ public class TicketServiceApplication {
 				id = input.nextInt();
 				if(id > 0)
 					break;
-				else {
+				else if(id == 0) {
+					System.out.println();
+					return;
+				}else {
 					System.out.println("\nSeat holding id not valid!\n");
-					System.out.print("Please input seat holding id: ");
+					System.out.print("Please input seat holding id(input 0 for exist): ");
 				}
 			}catch(Exception e) {
 				System.out.println("\nSeat holding id not valid!\n");
-				System.out.print("Please input seat holding id: ");
+				System.out.print("Please input seat holding id(input 0 for exist): ");
 			}
 		}
 		System.out.print("Please input your confirmation email: ");
@@ -163,7 +176,6 @@ public class TicketServiceApplication {
 	}
 	
 	public static void main(String[] args) {
-		TicketServiceImpl ticketService = new TicketServiceImpl();
 		System.out.println("Welcome to Hatcher's Tickets Service!\n");
 		while(true) {
 			System.out.println("Main Menu:");
@@ -181,11 +193,11 @@ public class TicketServiceApplication {
 			}catch(Exception e) {
 			}
 			switch(choice) {
-				case 1: printPriorities(ticketService); break;
-				case 2: printSeats(ticketService); break;
-				case 3: printSeatAmount(ticketService); break;
-				case 4: bookSeats(ticketService); break;
-				case 5: reserveSeats(ticketService); break;
+				case 1: printPriorities(); break;
+				case 2: printSeats(); break;
+				case 3: printSeatAmount(); break;
+				case 4: bookSeats(); break;
+				case 5: reserveSeats(); break;
 				case 0: System.exit(0); break;
 				default: System.out.println("\nInvalid Input!\n");break;
 			}
