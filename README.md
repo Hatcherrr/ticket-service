@@ -22,7 +22,7 @@ Assumptions:
 6. If there're no continues seats but enough separate seats. And the show or the film are really good to watch, like Avengers: Endgame, people doesn't mind sit separately. Then assign them separate seats.
 
 
-The venue is 9 * 33 and the priority distribution like: (you can check it in the main method)
+The venue is 9 * 33 and the priority distribution like: (you can check it by running the main method, that's much more clear)
 
 0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 31 29 27 25 23 21 19 17 15 13 11 9 7 5 3 1
 
