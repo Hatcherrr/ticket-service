@@ -203,7 +203,7 @@ public class TicketServiceApplication {
 				case 3: printSeatAmount(); break;
 				case 4: bookSeats(); break;
 				case 5: reserveSeats(); break;
-				case 0: System.exit(0); break;
+				case 0: System.out.println("\nThanks for using, bye-bye!");System.exit(0); break;
 				default: System.out.println("\nInvalid Input!\n");break;
 			}
 		}
