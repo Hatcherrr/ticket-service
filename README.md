@@ -16,10 +16,10 @@ In this coding challenge, I set every seat with a priority, then use PriorityBlo
 Assumptions:
 1. Best Seats are the seats which located at middle of the venue.
 2. The closer the seats to the middle row, the better they are.
-3. I think seats in the backmost are better than in first 3 rows.
+3. I think seats in the backmost are better than in the first 3 rows. So the backmost row has higher priority than the first 3 rows.
 4. The closer the seats to the middle column, the better they are.
 5. People come to this venue with friends, they prefer continues seats rather than separate seats.
-6. If there're no continues seats and the show or the film are reaaly good to watch, like Avengers: Endgame, people doesn't mind sit separately. Then assign them separate seats.
+6. If there're no continues seats but enough separate seats. And the show or the film are really good to watch, like Avengers: Endgame, people doesn't mind sit separately. Then assign them separate seats.
 
 
 The venue is 9 * 33 and the priority distribution like: (you can check it in the main method)
