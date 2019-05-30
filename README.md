@@ -1,14 +1,28 @@
 # ticket-service
-Install maven: https://maven.apache.org/download.cgi, then direct to the project file.
+If using command line, please follow:
+1. Install maven: https://maven.apache.org/download.cgi
+2. Change to the project file path.
+3. Use "mvn clean install" to build jar file.
+4. Then you can use both "java -jar ./target/ticket-service.jar"
+or "java -cp ./target/ticket-service.jar com.mercury.ticketservice.TicketServiceApplication" to run the program
 
-Use "mvn clean install" to build jar file.
-Then use "java -cp ./target/ticket-service.jar com.mercury.ticketservice.TicketServiceApplication" to run this application
+If using Eclipse or IntelliJ:
+1. Import maven project into your IDE.
+2. Open TicketServiceApplication class then run it.
 
 
-Set every seat with a priority, then use PriorityQueue to solve this problem.
+In this coding challenge, I set every seat with a priority, then use PriorityBlockingQueue to solve this problem.
 
-Assumption: Best Seats are the seats which located at middle of the venue.
-The venue is 9 * 33 the priority distribution like: (you can check it in the main method)
+Assumptions:
+1. Best Seats are the seats which located at middle of the venue.
+2. The closer the seats to the middle row, the better they are.
+3. I think seats in the backmost are better than in first 3 rows.
+4. The closer the seats to the middle column, the better they are.
+5. People come to this venue with friends, they prefer continues seats rather than separate seats.
+6. If there're no continues seats and the show or the film are reaaly good to watch, like Avengers: Endgame, people doesn't mind sit separately. Then assign them separate seats.
+
+
+The venue is 9 * 33 and the priority distribution like: (you can check it in the main method)
 
 0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 31 29 27 25 23 21 19 17 15 13 11 9 7 5 3 1
 
@@ -27,5 +41,3 @@ The venue is 9 * 33 the priority distribution like: (you can check it in the mai
 132 134 136 138 140 142 144 146 148 150 152 154 156 158 160 162 164 163 161 159 157 155 153 151 149 147 145 143 141 139 137 135 133
 
 99 101 103 105 107 109 111 113 115 117 119 121 123 125 127 129 131 130 128 126 124 122 120 118 116 114 112 110 108 106 104 102 100
-
-I think the last rows are better than the first three rows, so I set the different weight with each row.
