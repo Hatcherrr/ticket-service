@@ -1,5 +1,6 @@
 package com.mercury.ticketservice.services.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -138,7 +139,7 @@ public class TicketServiceImpl implements TicketService {
 	 *  directly poll out from avilableSeats
 	 */
 	public synchronized SeatHold findAndHoldSeparateSeats(int numSeats, String customerEmail) {
-		if(numSeats <= 0 || numSeats > numSeatsAvailable())
+		if(numSeats <= 0 || numSeats > numSeatsAvailable() || customerEmail == null || customerEmail.length() < 7)
 			return null;
 		List<Seat> resultSeats = new ArrayList<>();
 		for(int i = 0; i < numSeats; i++) {
@@ -154,11 +155,12 @@ public class TicketServiceImpl implements TicketService {
 	}
 	
 	/*
+	 * minimum length of email is 7, example: a@b.com
 	 * Best Seats: the continues seats which has the highest priorities
 	 */
 	@Override
 	public synchronized SeatHold findAndHoldSeats(int numSeats, String customerEmail) {
-		if(numSeats <= 0 || numSeats > numSeatsAvailable())
+		if(numSeats <= 0 || numSeats > numSeatsAvailable() || customerEmail == null || customerEmail.length() < 7)
 			return null;
 		List<Seat> resultSeats = null;
 		// if numSeats is bigger than 1 row, means need split the seats into multiple rows
@@ -211,12 +213,13 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public synchronized String reserveSeats(int seatHoldId, String customerEmail) {
-		if(seatHoldId <= 0 || customerEmail.length() == 0 || customerEmail == null)
+		if(seatHoldId <= 0 || customerEmail == null || customerEmail.length() < 7)
 			return null;
 		releaseHolds();
 		int i = 0;
 		int size = holds.size();
 		SeatHold seatHold = null;
+		// find hold by seatHoldId
 		while(i < size) {
 			if(holds.get(i).getId() == seatHoldId) {
 				seatHold = holds.get(i);
@@ -236,27 +239,76 @@ public class TicketServiceImpl implements TicketService {
 		holds.remove(seatHold);
 		
 		// create code
-		long codeRow = 0; // 9 bits, each bit represent the row number of seat
-		long codeCol = 0; // 33 bits, each bit represent the column number of seat
-		List<Integer> rowList = seatList.stream()
-				.map(Seat::getRow)
-				.distinct()
-				.collect(Collectors.toList());
-		for(int move : rowList)
-			codeRow += 1 << move;
-		List<Integer> colList = seatList.stream()
-				.map(Seat::getCol)
-				.distinct()
-				.collect(Collectors.toList());
-		for(int move : colList)
-			codeCol += 1 << move;
+		StringBuilder sb = new StringBuilder();
+		for(Seat s : seatList) {
+			int row = s.getRow() + 1;
+			int col = s.getCol() + 1;
+			sb.append(row).append(col);
+		}
+		sb.append(seatList.size());
+		return new BigInteger(sb.toString(),10).toString(32).toUpperCase();
 		
-		// totally 42 bits
-		long code = codeRow << 33 + codeCol; // code of row left move 33 bit plus code of column
-											// in this way we can easily get the seats from this code
-		return "" + code;
+		// create code
+//		long codeRow = 0; // 9 bits, each bit represent the row number of seat
+//		long codeCol = 0; // 33 bits, each bit represent the column number of seat
+//		List<Integer> rowList = seatList.stream()
+//				.map(Seat::getRow)
+//				.distinct()
+//				.collect(Collectors.toList());
+//		for(int move : rowList)
+//			codeRow += 1l << move;
+//		List<Integer> colList = seatList.stream()
+//				.map(Seat::getCol)
+//				.distinct()
+//				.collect(Collectors.toList());
+//		System.out.println(colList);
+//		for(int move : colList)
+//			codeCol += 1l << move;
+//		
+//		// long is 64 bits. Totally we use 51 bits as code, including seats amount
+//		// total amount of seats is 297, which is 9 bits
+//		System.out.println(codeRow + "-" + codeCol);
+//		long code = (codeRow << 33 + 9) + (codeCol << 9) + seatList.size(); // code of row left shift 42 bits + code of column left shift 9 bits + amount of seats
+//																		// in this way we can easily reverse and get the seats from this code
+//		return "" + code;
 	}
 
+	/*
+	 * minimum size of confirmation code is 13
+	 * use the code to reverse and get the seats
+	 */
+//	public List<Seat> checkinSeats(String confirmCode, String customerEmail){
+//		if(confirmCode == null || confirmCode.length() < 13 || customerEmail == null || customerEmail.length() < 7)
+//			return null;
+//		long code = Long.parseLong(confirmCode);
+//		int num = (int) (code & 511l);
+//		long rowCode = (code & 511l << 42) >>> 42;
+//		long colCode = (code & (1l << 33) - 1 << 9) >>> 9;
+//		System.out.println(colCode);
+//		List<Seat> seatsList = new ArrayList<>();
+//		List<Integer> rowList = new ArrayList<>();
+//		List<Integer> colList = new ArrayList<>();
+//		for(int i = 0; i < 9; i++) {
+//			if(rowCode % 2 != 0)
+//				rowList.add(i);
+//			rowCode /= 2;
+//		}
+//		System.out.println(rowList);
+//		for(int i = 0; i < 33; i++) {
+//			if(colCode % 2 != 0)
+//				colList.add(i);
+//			colCode /= 2;
+//		}
+//		System.out.println(colList);
+//		for(int i : rowList)
+//			for(int j : colList)
+//				seatsList.add(seats.get(i).get(j));
+//		System.out.println(seatsList.size());
+//		if(seatsList.size() != num)
+//			return null;
+//		return seatsList;
+//	}
+	
 	public static Queue<Seat> getAvilableSeats() {
 		return avilableSeats;
 	}

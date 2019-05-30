@@ -30,6 +30,7 @@ public class TicketServiceApplication {
 		System.out.println();
 	}
 	
+	// print seats in the venue
 	public static void printSeats() {
 		List<List<Seat>> seats = TicketServiceImpl.getSeats();
 		System.out.println("\n---------------------------------------------------------- S C R E E N ------------------------------------------------------------");
@@ -52,11 +53,13 @@ public class TicketServiceApplication {
 		System.out.println("\nΔ - Holding   ◆ - Reserved\n");
 	}
 	
+	// print the total amount of available seats
 	public static void printSeatAmount() {
 		System.out.println("\nAvailable seats: " + ticketService.numSeatsAvailable());
 		System.out.println();
 	}
 	
+	// book separate seats
 	public static void bookSeparateSeats(int num, String email) {
 		if(num > ticketService.numSeatsAvailable()) {
 			System.out.println("\nSorry, seats are not enough!\n");
@@ -77,6 +80,7 @@ public class TicketServiceApplication {
 		}
 	}
 	
+	// book continues seats
 	public static void bookSeats() {
 		System.out.println();
 		System.out.print("How many seats you want to book?(input 0 back to the main menu) ");
@@ -137,8 +141,9 @@ public class TicketServiceApplication {
 		}
 	}
 	
+	// reserve seats
 	public static void reserveSeats() {
-		System.out.print("\nPlease input seat holding id(input 0 for exist): ");
+		System.out.print("\nPlease input seat holding id(input 0 back to main menu): ");
 		int id = -1;
 		while(true) {
 			input = new Scanner(System.in);
@@ -151,11 +156,11 @@ public class TicketServiceApplication {
 					return;
 				}else {
 					System.out.println("\nSeat holding id not valid!\n");
-					System.out.print("Please input seat holding id(input 0 for exist): ");
+					System.out.print("Please input seat holding id(input 0 back to main menu): ");
 				}
 			}catch(Exception e) {
 				System.out.println("\nSeat holding id not valid!\n");
-				System.out.print("Please input seat holding id(input 0 for exist): ");
+				System.out.print("Please input seat holding id(input 0 back to main menu): ");
 			}
 		}
 		System.out.print("Please input your confirmation email: ");
@@ -171,7 +176,7 @@ public class TicketServiceApplication {
 			System.out.println("Please try again.\n");
 		}else {
 			System.out.println("\nConfirmed! Here's your confirmation code: " + code);
-			System.out.println("Please take care of it and show when you check in.\n");
+			System.out.println("Please take care of it and use it to check in.\n");
 		}
 	}
 	

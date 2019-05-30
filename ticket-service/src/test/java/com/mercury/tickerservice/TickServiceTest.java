@@ -30,27 +30,9 @@ public class TickServiceTest {
 	@Test
 	public void testConfirmationCode() {
 		SeatHold hold = ticketService.findAndHoldSeats(2, "hatcher.zhao.java@gmail.com");
-		
-		// same way to calculate the code
-		List<Seat> seats = hold.getSeats();
-		long codeRow = 0;
-		long codeCol = 0;
-		List<Integer> rowList = seats.stream()
-				.map(Seat::getRow)
-				.distinct()
-				.collect(Collectors.toList());
-		for(int move : rowList)
-			codeRow += 1 << move;
-		List<Integer> colList = seats.stream()
-				.map(Seat::getCol)
-				.distinct()
-				.collect(Collectors.toList());
-		for(int move : colList)
-			codeCol += 1 << move;
-		long code = codeRow << 33 + codeCol;
-		
 		String confirm = ticketService.reserveSeats(1, "hatcher.zhao.java@gmail.com");
-		Assert.assertTrue(confirm.equals("" + code));
+		
+		Assert.assertTrue(confirm.equals("4TTSE"));
 	}
 	
 	/*
@@ -153,11 +135,15 @@ public class TickServiceTest {
 		Assert.assertTrue(count == 295);
 	}
 	
-	// test multi-threading
+	/*
+	 *  test multi-threading case with sleep()
+	 *  at the beginning, there're 295 available seats
+	 */
 	@Test
-	public void zzTestConcurrent() {
+	public void zzTestConcurrent() throws InterruptedException {
 		TicketServiceImpl.setEXPIRE_TIME(15 * 60 * 1000); // set expire time back to 15 minutes
-		new Thread(() -> {
+		
+		Thread t1 = new Thread(() -> {
 			try {
 				Thread.sleep(1000); // make sure the second thread get the lock first
 			} catch (InterruptedException e) {
@@ -166,10 +152,47 @@ public class TickServiceTest {
 			int count = ticketService.numSeatsAvailable();
 			Assert.assertEquals(count, 293);
 			ticketService.findAndHoldSeats(10, "thread1@testcase.com");
+			count = ticketService.numSeatsAvailable();
 			Assert.assertEquals(count, 283);
-		}).start();
-		new Thread(() -> {
+		});
+		
+		Thread t2 = new Thread(() -> {
 			ticketService.findAndHoldSeats(2, "thread2@testcase.com");
-		}).start();
+		});
+		
+		t1.start();
+		t2.start();
+		
+		t1.join();
+		t2.join();
+	}
+	
+	/*
+	 * test multi-threading without sleep()
+	 * at the beginning, there're 283 available seats
+	 */
+	@Test
+	public void zzTestConcurrent2() throws InterruptedException {
+		Thread t3 = new Thread(() -> {
+			int count = ticketService.numSeatsAvailable();
+			Assert.assertTrue(count == 283 || count == 281); // not guaranteed which thread will execute first
+			ticketService.findAndHoldSeats(10, "thread3@testcase.com");
+			count = ticketService.numSeatsAvailable();
+			Assert.assertTrue(count == 273 || count == 271);
+		});
+		
+		Thread t4 = new Thread(() -> {
+			int count = ticketService.numSeatsAvailable();
+			Assert.assertTrue(count == 283 || count == 273);
+			ticketService.findAndHoldSeats(2, "thread4@testcase.com");
+			count = ticketService.numSeatsAvailable();
+			Assert.assertTrue(count == 281 || count == 271);
+		});
+		
+		t3.start();
+		t4.start();
+		
+		t3.join();
+		t4.join();
 	}
 }
