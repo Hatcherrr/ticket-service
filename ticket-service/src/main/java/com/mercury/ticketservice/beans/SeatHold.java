@@ -5,7 +5,7 @@ import java.util.List;
 
 public class SeatHold {
 
-	private long id;
+	private int id;
 	
 	private String email;
 	
@@ -18,7 +18,7 @@ public class SeatHold {
 		// TODO Auto-generated constructor stub
 	}
 
-	public SeatHold(long id, String email, List<Seat> seats, Date timestamp) {
+	public SeatHold(int id, String email, List<Seat> seats, Date timestamp) {
 		super();
 		this.id = id;
 		this.email = email;
@@ -26,11 +26,11 @@ public class SeatHold {
 		this.timestamp = timestamp;
 	}
 
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

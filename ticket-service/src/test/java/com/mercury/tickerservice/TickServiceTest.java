@@ -30,7 +30,7 @@ public class TickServiceTest {
 	@Test
 	public void testConfirmationCode() {
 		SeatHold hold = ticketService.findAndHoldSeats(2, "hatcher.zhao.java@gmail.com");
-		String confirm = ticketService.reserveSeats(1, "hatcher.zhao.java@gmail.com");
+		String confirm = ticketService.reserveSeats(hold.getId(), "hatcher.zhao.java@gmail.com");
 		
 		Assert.assertTrue(confirm.equals("4TTSE"));
 	}

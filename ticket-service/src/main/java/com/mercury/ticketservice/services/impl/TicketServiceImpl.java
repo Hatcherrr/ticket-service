@@ -17,9 +17,9 @@ import com.mercury.ticketservice.services.TicketService;
 
 public class TicketServiceImpl implements TicketService {
 
-	private static final int ROW = 9;
+	private static final int ROW = 9; // 9 rows
 	
-	private static final int COLUMN = 33;
+	private static final int COLUMN = 33; // 33 columns
 	
 	private static final int[] rowPriority = {0, 1, 2, 6, 8, 7, 5, 4, 3}; // different row has different priority
 	
@@ -31,7 +31,7 @@ public class TicketServiceImpl implements TicketService {
 	
 	private static List<SeatHold> holds;
 	
-	private static long seatHoldId = 1; // id of hold
+	private static int seatHoldId = 1; // id of hold
 	
 	/*
 	 * each seat has its priority, start from 0
@@ -238,17 +238,17 @@ public class TicketServiceImpl implements TicketService {
 		});
 		holds.remove(seatHold);
 		
-		// create code
-		StringBuilder sb = new StringBuilder();
+		// create code by using duotricemary
+		StringBuilder strBuilder = new StringBuilder();
 		for(Seat s : seatList) {
 			int row = s.getRow() + 1;
 			int col = s.getCol() + 1;
-			sb.append(row).append(col);
+			strBuilder.append(row).append(col);
 		}
-		sb.append(seatList.size());
-		return new BigInteger(sb.toString(),10).toString(32).toUpperCase();
+		strBuilder.append(seatList.size());
+		return new BigInteger(strBuilder.toString(),10).toString(32).toUpperCase();
 		
-		// create code
+		// try to create code by using bits
 //		long codeRow = 0; // 9 bits, each bit represent the row number of seat
 //		long codeCol = 0; // 33 bits, each bit represent the column number of seat
 //		List<Integer> rowList = seatList.stream()
